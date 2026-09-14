@@ -262,3 +262,61 @@ I am building this project as practical preparation for an IT Ausbildung in Germ
 * Fachinformatikerin für Anwendungsentwicklung
 
 The project will continue to grow as I learn more about infrastructure, automation, programming, and troubleshooting.
+
+## DHCP Configuration
+
+A separate internal Hyper-V network was created for the lab environment.
+
+### Internal Network
+
+- Virtual Switch: `HomeLab-Internal`
+- Network: `10.10.10.0/24`
+- Linux Server (`eth1`): `10.10.10.1`
+
+### DHCP Server
+
+The Linux Server runs `isc-dhcp-server` on `eth1`.
+
+## DHCP Configuration
+
+A separate internal Hyper-V network was created for the lab environment.
+
+### Internal Network
+
+* Virtual Switch: `HomeLab-Internal`
+* Network: `10.10.10.0/24`
+* Linux Server (`eth1`): `10.10.10.1`
+
+### DHCP Server
+
+The Linux Server runs `isc-dhcp-server` on `eth1`.
+
+DHCP configuration:
+
+* DHCP range: `10.10.10.100 - 10.10.10.200`
+* Subnet mask: `255.255.255.0`
+* Default gateway: `10.10.10.1`
+* DNS server: `10.10.10.1`
+
+### Windows Client
+
+The Windows Client successfully received its network configuration from the Linux DHCP server.
+
+Example:
+
+```text
+IPv4 Address:    10.10.10.100
+Subnet Mask:     255.255.255.0
+Default Gateway: 10.10.10.1
+```
+
+### Validation
+
+The following tests were performed successfully:
+
+* DHCP address assignment
+* DHCP lease renewal
+* Windows Client → Linux Server ping
+* DNS query from Windows Client to Linux Server
+
+This confirms that the internal DHCP and DNS infrastructure is operational.
