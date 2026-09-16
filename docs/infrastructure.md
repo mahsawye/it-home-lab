@@ -68,28 +68,101 @@ I also learned how to check the server's network configuration, routing, memory 
 
 ---
 
-### 2. Networking
+## 2. Networking
 
-The server is connected to my home lab network and currently receives its IP address through DHCP.
+The lab uses two separate virtual networks created with Hyper-V.
 
-I tested the network step by step:
+### External Network
 
-```bash
-ip addr
-ip route
-ping -c 4 192.168.100.1
-ping -c 4 8.8.8.8
-ping -c 4 google.com
+The Linux Server is connected to the `HomeLab-External` virtual switch.
+
+```text
+Network:        192.168.100.0/24
+Linux Server:   192.168.100.17
+Gateway:        192.168.100.1
 ```
 
-This helped me understand the difference between:
+The server uses a static IP address on the external network.
 
-* Network interface
-* IP address
-* Subnet
-* Default gateway
-* Internet connectivity
-* DNS resolution
+The IP address is reserved on the home router based on the server's MAC address to prevent IP conflicts with the router's DHCP pool.
+
+### Internal Network
+
+A separate isolated network was created for communication between lab machines.
+
+```text
+Network:        10.10.10.0/24
+Linux Server:   10.10.10.1
+Windows Client: 10.10.10.100
+```
+
+The Linux Server provides DHCP for this internal network.
+
+The DHCP server assigns addresses from:
+
+```text
+10.10.10.100 - 10.10.10.200
+```
+
+The Linux Server also provides DNS for the internal network.
+
+### Interface Mapping
+
+The network interfaces are identified by their MAC addresses to avoid depending on the interface names assigned by Linux.
+
+```text
+MAC ...:00 → HomeLab-External → 192.168.100.17
+MAC ...:03 → HomeLab-Internal → 10.10.10.1
+```
+
+This approach ensures that the network roles remain consistent even if Linux assigns different interface names after a reboot.
+
+### Network Validation
+
+The network was tested step by step using:
+
+```bash
+ip -br addr
+ip route
+ping -c 4 192.168.100.1
+```
+
+The Windows Client was also tested against the Linux Server:
+
+```text
+Windows Client → 10.10.10.1
+Windows Client → 192.168.100.17
+```
+
+DNS resolution was tested with:
+
+```powershell
+nslookup linux-server.nexatech.local
+```
+
+These tests helped me understand the relationship between:
+
+* Network interfaces
+* MAC addresses
+* IP addresses
+* Subnets
+* Default gateways
+* Routing
+* DHCP
+* DNS
+* Internal and external networks
+
+### Troubleshooting Example
+
+After a reboot, the Linux interface names no longer matched the expected configuration.
+
+Instead of assuming that `eth0` and `eth1` always represent the same physical/virtual adapters, I compared their MAC addresses and identified the correct network roles.
+
+The Netplan configuration was then updated to match interfaces by MAC address.
+
+This demonstrated an important troubleshooting principle:
+
+> Verify the actual network state before changing the configuration.
 
 ---
 
