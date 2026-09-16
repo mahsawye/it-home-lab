@@ -455,3 +455,74 @@ linux-server.nexatech.local
 
 This confirmed that the internal DNS server and the CNAME record are working correctly.
 
+## Network Troubleshooting
+
+The lab network was validated step by step from the Windows Client to the Linux Server.
+
+### Validation Steps
+
+1. **IP Configuration**
+
+   The Windows Client received:
+
+   * IPv4: `10.10.10.100`
+   * Subnet Mask: `255.255.255.0`
+   * Default Gateway: `10.10.10.1`
+
+2. **Network Connectivity**
+
+   The Linux Server was reachable from the Windows Client using ICMP:
+
+   ```text
+   Windows Client → 10.10.10.1
+   ```
+
+3. **DNS Resolution**
+
+   The Windows Client successfully resolved:
+
+   ```text
+   linux-server.nexatech.local → 192.168.100.17
+   ```
+
+4. **TCP Connectivity**
+
+   TCP port 22 was tested from the Windows Client:
+
+   ```powershell
+   Test-NetConnection linux-server.nexatech.local -Port 22
+   ```
+
+   The result was:
+
+   ```text
+   TcpTestSucceeded : True
+   ```
+
+5. **SSH Authentication**
+
+   The Windows Client successfully connected to the Linux Server using SSH:
+
+   ```text
+   ssh admin1@linux-server.nexatech.local
+   ```
+
+### Troubleshooting Approach
+
+The network was tested from the lower layers to the application/service layer:
+
+```text
+IP Configuration
+        ↓
+Network Connectivity
+        ↓
+DNS Resolution
+        ↓
+TCP Port Connectivity
+        ↓
+Service / Authentication
+```
+
+This approach helps isolate network and service problems systematically instead of changing multiple configurations at the same time.
+
+
