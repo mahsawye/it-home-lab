@@ -427,3 +427,31 @@ The Windows Client was then tested using DHCP and successfully received:
 * Default gateway: `10.10.10.1`
 
 This demonstrated the importance of verifying the actual network interface mapping after changes to a virtualized network environment.
+
+### DNS Records
+
+The internal DNS zone `nexatech.local` is hosted on the Linux Server using BIND9.
+
+Current DNS records include:
+
+* `linux-server.nexatech.local` → `192.168.100.17`
+* `dns.nexatech.local` → CNAME → `linux-server.nexatech.local`
+
+The CNAME record provides an alias for the Linux Server.
+
+### DNS Validation
+
+DNS resolution was tested from both the Linux Server and the Windows Client.
+
+The Windows Client successfully resolved:
+
+```text
+dns.nexatech.local
+        ↓
+linux-server.nexatech.local
+        ↓
+192.168.100.17
+```
+
+This confirmed that the internal DNS server and the CNAME record are working correctly.
+
