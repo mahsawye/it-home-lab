@@ -669,3 +669,64 @@ Password authentication was not disabled until key-based authentication had been
 This reduces the risk of losing remote access during SSH hardening.
 
 
+## Firewall Hardening
+
+The Linux Server uses UFW (Uncomplicated Firewall) to control incoming network traffic.
+
+### Default Policy
+
+Incoming traffic is denied by default:
+
+```text
+Default: deny (incoming)
+Default: allow (outgoing)
+```
+
+Only required services are explicitly allowed.
+
+### Allowed Services
+
+The internal lab network is:
+
+```text
+10.10.10.0/24
+```
+
+SSH and DNS access are restricted to this network:
+
+```text
+10.10.10.0/24 → TCP 22 → SSH
+10.10.10.0/24 → Port 53 → DNS
+```
+
+This prevents unrestricted access from other networks.
+
+### Validation
+
+The firewall configuration was verified with:
+
+```bash
+sudo ufw status verbose
+```
+
+The final configuration showed:
+
+```text
+22/tcp → ALLOW IN → 10.10.10.0/24
+53     → ALLOW IN → 10.10.10.0/24
+```
+
+Connectivity was then tested from the Windows Client using:
+
+```powershell
+Test-NetConnection 10.10.10.1 -Port 22
+Test-NetConnection 10.10.10.1 -Port 53
+```
+
+Both tests succeeded.
+
+### Security Principle
+
+The firewall follows the principle of least privilege:
+
+Only the network traffic required for the lab services is allowed, while other incoming traffic remains blocked by the default policy.
