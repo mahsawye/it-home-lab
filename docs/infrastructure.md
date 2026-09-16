@@ -525,4 +525,55 @@ Service / Authentication
 
 This approach helps isolate network and service problems systematically instead of changing multiple configurations at the same time.
 
+## Backup
+
+The Linux Server configuration is backed up to:
+
+```text
+/var/backups/nexatech/
+```
+
+The backup contains important infrastructure configuration files from:
+
+* `/etc/bind/`
+* `/etc/dhcp/`
+* `/etc/netplan/`
+
+The configuration files are stored in a compressed archive:
+
+```text
+nexatech-configs.tar.gz
+```
+
+### Backup Security
+
+The backup directory is restricted to the `root` user:
+
+```text
+drwx------
+```
+
+This prevents regular users from accessing or modifying the backup files.
+
+### Restore Test
+
+The backup archive was extracted into a temporary directory without modifying the active system configuration.
+
+The following files were successfully restored:
+
+* BIND9 configuration
+* DHCP configuration
+* Netplan configuration
+
+### Integrity Check
+
+A SHA-256 checksum was generated for the backup archive using:
+
+```bash
+sudo sha256sum /var/backups/nexatech/nexatech-configs.tar.gz
+```
+
+This checksum can be used to verify that the backup file has not been modified or corrupted.
+
+
 
