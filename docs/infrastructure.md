@@ -393,3 +393,37 @@ The following tests were performed successfully:
 * DNS query from Windows Client to Linux Server
 
 This confirms that the internal DHCP and DNS infrastructure is operational.
+
+
+### DHCP Troubleshooting
+
+After a server reboot, the DHCP service failed to start.
+
+The issue was caused by the DHCP server being configured to use the wrong network interface.
+
+The Linux network configuration had changed so that:
+
+* `eth0` → HomeLab-Internal → `10.10.10.1`
+* `eth1` → HomeLab-External → `192.168.100.17`
+
+However, `/etc/default/isc-dhcp-server` was still configured with:
+
+```text
+INTERFACESv4="eth1"
+```
+
+The configuration was corrected to:
+
+```text
+INTERFACESv4="eth0"
+```
+
+After restarting the service, DHCP became active again.
+
+The Windows Client was then tested using DHCP and successfully received:
+
+* IPv4 address: `10.10.10.100`
+* Subnet mask: `255.255.255.0`
+* Default gateway: `10.10.10.1`
+
+This demonstrated the importance of verifying the actual network interface mapping after changes to a virtualized network environment.
