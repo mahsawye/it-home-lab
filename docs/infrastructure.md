@@ -575,5 +575,97 @@ sudo sha256sum /var/backups/nexatech/nexatech-configs.tar.gz
 
 This checksum can be used to verify that the backup file has not been modified or corrupted.
 
+## SSH Security Hardening
+
+SSH access to the Linux Server was hardened using key-based authentication.
+
+### Initial Configuration
+
+The initial SSH configuration allowed password authentication:
+
+```text
+PermitRootLogin prohibit-password
+PasswordAuthentication yes
+PubkeyAuthentication yes
+```
+
+This meant that the `admin1` account could authenticate using a password over SSH.
+
+### SSH Key Authentication
+
+An Ed25519 SSH key pair was generated on the Windows Client.
+
+The public key was added to the `admin1` account on the Linux Server:
+
+```text
+~/.ssh/authorized_keys
+```
+
+The SSH key was tested successfully before disabling password authentication.
+
+The private key remains on the Windows Client and is not stored in the Git repository.
+
+### Hardening Changes
+
+SSH was configured with:
+
+```text
+PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+```
+
+This prevents:
+
+* Direct SSH login as `root`
+* Password-based SSH authentication
+
+SSH access remains available through public-key authentication.
+
+### Validation
+
+The SSH configuration was validated with:
+
+```bash
+sudo sshd -t
+```
+
+The effective SSH configuration was checked with:
+
+```bash
+sudo sshd -T | grep -E '^(permitrootlogin|passwordauthentication|pubkeyauthentication)'
+```
+
+The final configuration confirmed:
+
+```text
+permitrootlogin no
+passwordauthentication no
+pubkeyauthentication yes
+```
+
+A new SSH connection from the Windows Client was then tested successfully using the Ed25519 private key.
+
+### Troubleshooting Approach
+
+The SSH hardening was performed in a safe order:
+
+```text
+Create SSH Key
+      ↓
+Install Public Key
+      ↓
+Test Key Authentication
+      ↓
+Validate SSH Configuration
+      ↓
+Disable Password Authentication
+      ↓
+Test New SSH Connection
+```
+
+Password authentication was not disabled until key-based authentication had been verified.
+
+This reduces the risk of losing remote access during SSH hardening.
 
 
